@@ -10,12 +10,22 @@
             background-color: #f0f2f5;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        header {
+        .container {
             background-color: #fff;
             padding: 20px;
+            border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
             text-align: center;
+        }
+        img {
+            width: 100%;
+            border-radius: 8px;
         }
         nav ul {
             list-style-type: none;
@@ -30,36 +40,41 @@
             color: #007bff;
             font-weight: bold;
         }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Jerome Bustarga</h1>
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="https://github.com/jhb09808">Repositories</a></li>
-            <li><a href="contact.html">Contact</a></li> <!-- Link to contact page -->
-        </ul>
-    </nav>
-</header>
-
 <div class="container">
-    <!-- Your content here -->
-</div>
+    <header>
+        <h1>Jerome Bustarga</h1>
+        <nav>
+            <ul>
+                <li><a href="#about">Home</a></li>
+                <li><a href="#projects">Repositories</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<footer>
-    © 2024 Jerome Bustarga
-</footer>
+    <img src="your-image.jpg" alt="Profile Picture">
+
+    <section id="about">
+        <h2>About Me</h2>
+        <p>I am Jerome Bustarga, currently residing in Omaha, Nebraska. I am a student at Creighton University, pursuing a Bachelor of Science in Computer Science and Graphic Design with a minor in Digital Humanities. I am on track to graduate in May 2026.</p>
+
+        <p>Currently, I hold two positions at Creighton University. Since August 2023, I have been working as an Enrollment Management Phone Operator in the Admissions office, where I utilize advanced telecommunication systems and problem-solving skills to assist callers efficiently.</p>
+
+        <p>More recently, in August 2024, I took on the role of Community Engagement Intern at Creighton University's Office of Global & Community-Engaged Learning. This position has been instrumental in developing my project management and data analysis skills. I'm responsible for implementing logistical measures, coordinating events, and managing databases, all while utilizing my graphic design skills to create engaging materials.</p>
+
+        <p>I am bilingual, fluent in both English and Filipino. My technical skills span various programming languages including HTML, CSS, JavaScript, Python, Java, and MATLAB. I'm also proficient in frameworks and tools such as Django, MySQL, AWS, Streamlit, Spring Boot, Microsoft Office, and Adobe Creative Cloud. My coursework has covered important areas such as Data Structures, Software Engineering, and Web Programming.</p>
+
+        <p>As I continue my academic and professional journey, I aim to leverage my unique combination of technical and creative skills in the fields of computer science and graphic design. I look forward to opportunities where I can apply these skills to create innovative solutions and make a positive impact in the digital world.</p>
+    </section>
+
+    <footer>
+        © 2024 Jerome Bustarga
+    </footer>
+</div>
 
 </body>
 </html>

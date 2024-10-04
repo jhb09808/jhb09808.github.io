@@ -1,80 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jerome Bustarga - Portfolio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            text-align: center;
-        }
-        img {
-            width: 50%; /* Smaller image size */
-            max-width: 300px; /* Set a maximum width */
-            border-radius: 8px;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin-right: 15px;
-        }
-        nav ul li a {
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jerome Bustarga</title>
 
-<div class="container">
-    <header>
-        <h1>Jerome Bustarga</h1>
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron-narrow.css" rel="stylesheet">
+
+    <!-- MY CSS FILE -->
+    <link rel="stylesheet" type="text/css" href="CBstyle.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header clearfix">
         <nav>
-            <ul>
-                <li><a href="#about">Home</a></li>
-                <li><a href="https://github.com/jhb09808">Repositories</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
+          <ul class="nav nav-pills pull-right">
+            <li class="active"><a href="index.html">Home</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="pubs.html">Publications</a></li>
+            <li><a href="CV.pdf">CV</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
         </nav>
-    </header>
+        <h1 class="text-muted">Jerome Bustarga</h1>
+      </div>
 
-    <img src="IMG_7224.jpeg" alt="Profile Picture">
+      <!-- Home Page -->
+      <div id="home">
+        <!-- Main image -->
+        <div class="jumbotron">
+          <img src="your-image.jpg" alt="Jerome in front of a scenic background" style="width:100%; border-radius:8px;">        
+        </div>
 
-    <section id="about">
-        <h2>About Me</h2>
-        <p>I am Jerome Bustarga, currently residing in Omaha, Nebraska. I am a student at Creighton University, pursuing a Bachelor of Science in Computer Science and Graphic Design with a minor in Digital Humanities. I am on track to graduate in May 2026.</p>
+        <div class="row marketing">
+          <p>I am Jerome Bustarga, currently residing in Omaha, Nebraska. I am a student at Creighton University, pursuing a Bachelor of Science in Computer Science and Graphic Design with a minor in Digital Humanities. I am on track to graduate in May 2026.</p>
 
-        <p>Currently, I hold two positions at Creighton University. Since August 2023, I have been working as an Enrollment Management Phone Operator in the Admissions office, where I utilize advanced telecommunication systems and problem-solving skills to assist callers efficiently.</p>
+          <p>Currently, I hold two positions at Creighton University. Since August 2023, I have been working as an Enrollment Management Phone Operator in the Admissions office, where I utilize advanced telecommunication systems and problem-solving skills to assist callers efficiently.</p>
 
-        <p>More recently, in August 2024, I took on the role of Community Engagement Intern at Creighton University's Office of Global & Community-Engaged Learning. This position has been instrumental in developing my project management and data analysis skills. I'm responsible for implementing logistical measures, coordinating events, and managing databases, all while utilizing my graphic design skills to create engaging materials.</p>
+          <p>More recently, in August 2024, I took on the role of Community Engagement Intern at Creighton University's Office of Global & Community-Engaged Learning. This position has been instrumental in developing my project management and data analysis skills. I'm responsible for implementing logistical measures, coordinating events, and managing databases, all while utilizing my graphic design skills to create engaging materials.</p>
 
-        <p>I am bilingual, fluent in both English and Filipino. My technical skills span various programming languages including HTML, CSS, JavaScript, Python, Java, and MATLAB. I'm also proficient in frameworks and tools such as Django, MySQL, AWS, Streamlit, Spring Boot, Microsoft Office, and Adobe Creative Cloud. My coursework has covered important areas such as Data Structures, Software Engineering, and Web Programming.</p>
+          <p>I am bilingual, fluent in both English and Filipino. My technical skills span various programming languages including HTML, CSS, JavaScript, Python, Java, and MATLAB. I'm also proficient in frameworks and tools such as Django, MySQL, AWS, Streamlit, Spring Boot, Microsoft Office, and Adobe Creative Cloud. My coursework has covered important areas such as Data Structures, Software Engineering, and Web Programming.</p>
 
-        <p>As I continue my academic and professional journey, I aim to leverage my unique combination of technical and creative skills in the fields of computer science and graphic design. I look forward to opportunities where I can apply these skills to create innovative solutions and make a positive impact in the digital world.</p>
-    </section>
+          <p>As I continue my academic and professional journey, I aim to leverage my unique combination of technical and creative skills in the fields of computer science and graphic design. I look forward to opportunities where I can apply these skills to create innovative solutions and make a positive impact in the digital world.</p>
+        </div>
+      </div> <!-- /home -->
 
-    <footer>
-        © 2024 Jerome Bustarga
-    </footer>
-</div>
+      <footer class="footer">
+        <p>&copy; 2024 Jerome Bustarga</p>
+      </footer>
 
-</body>
+    </div> <!-- /container -->
+
+  </body>
 </html>

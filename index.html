@@ -20,17 +20,12 @@
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             max-width: 800px;
-        }
-        header {
-            display: flex;
-            align-items: center; /* Align items vertically */
-            justify-content: space-between; /* Space between elements */
+            text-align: center;
         }
         img {
-            width: 150px; /* Smaller image size */
-            height: auto;
+            width: 50%; /* Smaller image size */
+            max-width: 300px; /* Set a maximum width */
             border-radius: 8px;
-            margin-right: 20px; /* Space between image and text */
         }
         nav ul {
             list-style-type: none;
@@ -51,18 +46,17 @@
 
 <div class="container">
     <header>
-        <img src="IMG_7224.jpeg" alt="Profile Picture">
-        <div>
-            <h1>Jerome Bustarga</h1>
-            <nav>
-                <ul>
-                    <li><a href="#about">Home</a></li>
-                    <li><a href="#projects">Repositories</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
+        <h1>Jerome Bustarga</h1>
+        <nav>
+            <ul>
+                <li><a href="#about">Home</a></li>
+                <li><a href="#projects">Repositories</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
     </header>
+
+    <img src="IMG_7224.jpeg" alt="Profile Picture">
 
     <section id="about">
         <h2>About Me</h2>

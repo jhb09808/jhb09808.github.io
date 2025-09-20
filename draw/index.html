@@ -152,6 +152,12 @@
             height: 25px;
             cursor: pointer;
             z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+        
+        .hamburger.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .hamburger span {
@@ -403,12 +409,16 @@
         // Toggle mobile menu
         function toggleMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
+            const hamburger = document.querySelector('.hamburger');
+            
             mobileMenu.classList.toggle('active');
             
-            // Prevent body scroll when menu is open
+            // Hide/show hamburger based on menu state
             if (mobileMenu.classList.contains('active')) {
+                hamburger.classList.add('hidden');
                 document.body.style.overflow = 'hidden';
             } else {
+                hamburger.classList.remove('hidden');
                 document.body.style.overflow = 'hidden'; // Keep hidden for your design
             }
         }

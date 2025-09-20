@@ -6,6 +6,11 @@
     <title>Jerome's World</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <style>
+        html, body {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+        
         body {
             margin: 0;
             padding: 0;
@@ -16,6 +21,9 @@
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
         
         /* Make the canvas transparent */
@@ -134,108 +142,237 @@
             font-style: italic;
         }
         
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.8);
+            margin-bottom: 6px;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger:hover span {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            transition: right 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-weight: 300;
+        }
+
+        .close-btn:hover {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .mobile-nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .mobile-nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-family: -apple-system, sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .mobile-nav a:hover {
+            color: rgba(255, 255, 255, 1);
+            transform: translateX(10px);
+        }
+        
         /* Mobile responsiveness */
-@media screen and (max-width: 768px) {
-    .CTA {
-        top: 10px;  /* Changed from 10% to 10px */
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-    
-    #title h1 {
-        font-size: 60px;
-        line-height: 1;
-    }
-    
-    #title h1:first-child {
-        margin-bottom: 10px;
-    }
-    
-    #title p {
-        font-size: 20px;
-        margin: 20px 0 0 0;
-    }
-    
-    .CTA a {
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-    
-    body {
-        background-attachment: scroll;
-    }
-}
+        @media screen and (max-width: 768px) {
+            body {
+                background-attachment: scroll !important;
+                background-size: cover !important;
+                background-position: center center !important;
+                position: relative;
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+            
+            /* Create a fixed background layer for mobile */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url('images/sky.jpg');
+                background-size: cover;
+                background-position: center;
+                z-index: -1;
+            }
+            
+            /* Fix title positioning on mobile */
+            #title {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 90%;
+                text-align: center;
+            }
+            
+            .CTA {
+                display: none; /* Hide desktop navigation */
+            }
+            
+            .hamburger {
+                display: block; /* Show hamburger */
+            }
+            
+            #title h1 {
+                font-size: 60px;
+                line-height: 1;
+            }
+            
+            #title h1:first-child {
+                margin-bottom: 10px;
+            }
+            
+            #title p {
+                font-size: 20px;
+                margin: 20px 0 0 0;
+            }
+            
+            body {
+                cursor: auto;
+            }
+        }
+        
+        /* iOS specific fix */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                height: -webkit-fill-available;
+                background-size: cover !important;
+            }
+        }
 
-/* Extra small devices */
-@media screen and (max-width: 480px) {
-    .CTA {
-        top: 10px;  /* Changed from 8% to 10px */
-        flex-direction: column;
-        gap: 15px;
-        width: 80%;
-    }
-    
-    #title h1 {
-        font-size: 48px;
-        letter-spacing: 1px;
-    }
-    
-    #title h1:first-child {
-        margin-bottom: 8px;
-    }
-    
-    #title p {
-        font-size: 16px;
-        letter-spacing: 2px;
-    }
-    
-    .CTA a {
-        font-size: 13px;
-        padding: 8px 16px;
-        width: 100%;
-        text-align: center;
-    }
-    
-    #custom-cursor {
-        width: 15px;
-        height: 15px;
-    }
-}
+        /* Extra small devices */
+        @media screen and (max-width: 480px) {
+            /* Ensure title stays centered on small screens */
+            #title {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 90%;
+                text-align: center;
+            }
+            
+            #title h1 {
+                font-size: 48px;
+                letter-spacing: 1px;
+            }
+            
+            #title h1:first-child {
+                margin-bottom: 8px;
+            }
+            
+            #title p {
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+            
+            #custom-cursor {
+                width: 15px;
+                height: 15px;
+            }
+        }
 
-/* Landscape orientation on phones */
-@media screen and (max-width: 768px) and (orientation: landscape) {
-    .CTA {
-        top: 10px;  /* Changed from 10% to 10px */
-    }
-    
-    #title h1 {
-        font-size: 50px;
-    }
-    
-    #title h1:first-child {
-        margin-bottom: 8px;
-    }
-    
-    #title p {
-        font-size: 18px;
-        margin: 15px 0 0 0;
-    }
-}
+        /* Landscape orientation on phones */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            #title h1 {
+                font-size: 50px;
+            }
+            
+            #title h1:first-child {
+                margin-bottom: 8px;
+            }
+            
+            #title p {
+                font-size: 18px;
+                margin: 15px 0 0 0;
+            }
+        }
 
-/* Hide cursor on touch devices */
-@media (hover: none) and (pointer: coarse) {
-    #custom-cursor {
-        display: none;
-    }
-    
-    body {
-        cursor: auto;
-    }
-}
+        /* Hide cursor on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            #custom-cursor {
+                display: none;
+            }
+            
+            body {
+                cursor: auto;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="custom-cursor"></div>
+    
+    <!-- Hamburger Menu -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="close-btn" onclick="toggleMenu()">×</div>
+        <nav class="mobile-nav">
+            <a href="#" onclick="toggleMenu()">Home</a>
+            <a href="#" onclick="toggleMenu()">About Me</a>
+            <a href="https://www.linkedin.com/in/jeromebustarga0321/" target="_blank">LinkedIn</a>
+            <a href="https://github.com/jhb09808" target="_blank">Github</a>
+        </nav>
+    </div>
     
     <section>
         <nav>
@@ -262,6 +399,19 @@
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
+        
+        // Toggle mobile menu
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'hidden'; // Keep hidden for your design
+            }
+        }
         
         // p5.js sketch
         new p5((p) => {

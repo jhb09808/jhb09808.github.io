@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerome's World</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        #custom-cursor {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: background-color 0.3s ease;
+            mix-blend-mode: difference;
+        }
+        
+        #custom-cursor.social {
+            background: rgb(255, 255, 0);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+            border: 2px solid rgba(255, 255, 0, 0.8);
+        }
+        
+        #custom-cursor.corporate {
+            background: rgb(255, 255, 255);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        #custom-cursor.creative {
+            background: rgb(255, 0, 255);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+            border: 2px solid rgba(255, 0, 255, 0.8);
+        }
+        
+        #controls {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        button:hover {
+            transform: scale(1.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        button.social {
+            background: rgb(255, 255, 0);
+        }
+        
+        button.corporate {
+            background: rgb(255, 255, 255);
+        }
+        
+        button.creative {
+            background: rgb(255, 0, 255);
+        }
+        
+        #title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        #title h1 {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: -apple-system, sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        #title p {
+            color: rgba(255, 255, 255, 0.6);
+            font-family: -apple-system, sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin: 10px 0 0 0;
+            font-style: italic;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        #instructions p {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin: 5px 0;
+        }
+        
+        #instructions .highlight {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+        
+        .CTA {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) translateY(-120px);
+            display: flex;
+            gap: 30px;
+            z-index: 100;
+            justify-content: center;
+        }
+        
+        .CTA a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .CTA a:hover {
+            color: rgba(255, 255, 255, 1);
+        }
+    </style>
+</head>
+<body>
+    <div id="custom-cursor" class="social"></div>
+    
+    <section>
+        <nav>
+            <div class="CTA">
+                <a href="#">Home</a>
+                <a href="#">About Me</a>
+                <a href="https://www.linkedin.com/in/jeromebustarga0321/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/jhb09808" target="_blank">Github</a>
+				<a href="https://www.behance.net/jeromebustarga" target="_blank">Behance</a>
+            </div>
+        </nav>
+    </section>
+    
+    <div id="title">
+        <h1>It's Jerome's</h1>
+        <h1>World</h1>
+        <p>and you're just living in it.</p>
+    </div>
+    <div id="subtitle"></div>
+    
+    <div id="controls">
+        <button class="social" onclick="changeTheme('social')" title="Social Echo"></button>
+        <button class="corporate" onclick="changeTheme('corporate')" title="Corporate Echo"></button>
+        <button class="creative" onclick="changeTheme('creative')" title="Creative Echo"></button>
+    </div>
+
+    <script>
+        let currentTheme = 'social';
+        const themes = {
+            social: {
+                name: 'Social Echo',
+                colors: [
+                    [255, 0, 119],    // TikTok pink
+                    [29, 161, 242],   // Twitter blue
+                    [131, 58, 180],   // Instagram purple
+                    [255, 255, 0],    // Snapchat yellow
+                ],
+                behavior: 'viral'
+            },
+            corporate: {
+                name: 'Corporate Echo',
+                colors: [
+                    [0, 119, 181],    // LinkedIn blue
+                    [52, 168, 83],    // Excel green
+                    [234, 67, 53],    // Gmail red
+                    [255, 255, 255],  // Corporate white
+                ],
+                behavior: 'structured'
+            },
+            creative: {
+                name: 'Creative Echo',
+                colors: [
+                    [255, 102, 0],    // Creative orange
+                    [121, 85, 182],   // Twitch purple
+                    [255, 0, 255],    // Neon magenta
+                    [0, 255, 127],    // Matrix green
+                ],
+                behavior: 'chaotic'
+            }
+        };
+        
+        function changeTheme(theme) {
+            currentTheme = theme;
+            // Update cursor color
+            const cursor = document.getElementById('custom-cursor');
+            cursor.className = theme;
+        }
+        
+        // Track mouse movement for custom cursor
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // Hide cursor when mouse leaves window
+        document.addEventListener('mouseleave', () => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.display = 'none';
+        });
+        
+        // Show cursor when mouse enters window
+        document.addEventListener('mouseenter', () => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.display = 'block';
+        });
+        
+        new p5((p) => {
+            let particles = [];
+            let flowField;
+            let cols, rows;
+            let zoff = 0;
+            let scl = 20;
+            let attractors = [];
+            
+            class DataParticle {
+                constructor(x, y) {
+                    this.pos = p.createVector(x, y);
+                    this.vel = p.createVector(0, 0);
+                    this.acc = p.createVector(0, 0);
+                    this.maxspeed = p.random(2, 5);
+                    this.prevPos = this.pos.copy();
+                    
+                    let theme = themes[currentTheme];
+                    this.color = p.random(theme.colors);
+                    this.size = p.random(1, 3);
+                    this.life = 255;
+                    this.behavior = theme.behavior;
+                }
+                
+                follow(vectors) {
+                    let x = p.floor(this.pos.x / scl);
+                    let y = p.floor(this.pos.y / scl);
+                    let index = x + y * cols;
+                    let force = vectors[index];
+                    if (force) {
+                        this.applyForce(force);
+                    }
+                }
+                
+                applyForce(force) {
+                    this.acc.add(force);
+                }
+                
+                update() {
+                    // Different behaviors based on theme
+                    if (this.behavior === 'viral') {
+                        // Social media - explosive spread
+                        attractors.forEach(attr => {
+                            let d = p5.Vector.dist(this.pos, attr);
+                            if (d < 200) {
+                                let force = p5.Vector.sub(attr, this.pos);
+                                force.setMag(p.map(d, 0, 200, 2, 0));
+                                this.applyForce(force);
+                            }
+                        });
+                    } else if (this.behavior === 'structured') {
+                        // Corporate - grid-like movement
+                        if (p.frameCount % 60 === 0) {
+                            this.vel.x = p.round(this.vel.x);
+                            this.vel.y = p.round(this.vel.y);
+                        }
+                    } else if (this.behavior === 'chaotic') {
+                        // Creative - random bursts
+                        if (p.random() < 0.01) {
+                            this.vel.rotate(p.random(-p.PI, p.PI));
+                            this.vel.mult(3);
+                        }
+                    }
+                    
+                    this.vel.add(this.acc);
+                    this.vel.limit(this.maxspeed);
+                    this.pos.add(this.vel);
+                    this.acc.mult(0);
+                    
+                    this.life -= 0.5;
+                }
+                
+                show() {
+                    p.stroke(...this.color, this.life);
+                    p.strokeWeight(this.size);
+                    p.line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
+                    this.updatePrev();
+                }
+                
+                updatePrev() {
+                    this.prevPos.x = this.pos.x;
+                    this.prevPos.y = this.pos.y;
+                }
+                
+                edges() {
+                    if (this.pos.x > p.width) {
+                        this.pos.x = 0;
+                        this.updatePrev();
+                    }
+                    if (this.pos.x < 0) {
+                        this.pos.x = p.width;
+                        this.updatePrev();
+                    }
+                    if (this.pos.y > p.height) {
+                        this.pos.y = 0;
+                        this.updatePrev();
+                    }
+                    if (this.pos.y < 0) {
+                        this.pos.y = p.height;
+                        this.updatePrev();
+                    }
+                }
+            }
+            
+            class EchoWave {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = 0;
+                    this.maxRadius = p.random(100, 300);
+                    this.life = 255;
+                    this.speed = p.random(2, 5);
+                    this.color = p.random(themes[currentTheme].colors);
+                }
+                
+                update() {
+                    this.radius += this.speed;
+                    this.life -= 2;
+                }
+                
+                display() {
+                    p.noFill();
+                    p.stroke(...this.color, this.life * 0.5);
+                    p.strokeWeight(2);
+                    p.ellipse(this.x, this.y, this.radius * 2);
+                }
+                
+                isDead() {
+                    return this.life <= 0 || this.radius > this.maxRadius;
+                }
+            }
+            
+            let echoWaves = [];
+            
+            p.setup = () => {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.colorMode(p.RGB);
+                p.background(0);
+                
+                cols = p.floor(p.width / scl);
+                rows = p.floor(p.height / scl);
+                flowField = new Array(cols * rows);
+                
+                // Create initial attractors
+                for (let i = 0; i < 5; i++) {
+                    attractors.push(p.createVector(
+                        p.random(p.width),
+                        p.random(p.height)
+                    ));
+                }
+            };
+            
+            p.draw = () => {
+                // Subtle fade effect
+                p.noStroke();
+                p.fill(0, 5);
+                p.rect(0, 0, p.width, p.height);
+                
+                // Update flow field
+                let yoff = 0;
+                for (let y = 0; y < rows; y++) {
+                    let xoff = 0;
+                    for (let x = 0; x < cols; x++) {
+                        let index = x + y * cols;
+                        let angle = p.noise(xoff, yoff, zoff) * p.TWO_PI * 4;
+                        let v = p5.Vector.fromAngle(angle);
+                        v.setMag(1);
+                        flowField[index] = v;
+                        xoff += 0.1;
+                    }
+                    yoff += 0.1;
+                }
+                zoff += 0.003;
+                
+                // Update and display echo waves
+                echoWaves = echoWaves.filter(wave => {
+                    wave.update();
+                    wave.display();
+                    return !wave.isDead();
+                });
+                
+                // Add particles at mouse position
+                for (let i = 0; i < 5; i++) {
+                    particles.push(new DataParticle(p.mouseX + p.random(-10, 10), p.mouseY + p.random(-10, 10)));
+                }
+                
+                // Update and display particles
+                particles = particles.filter(particle => {
+                    particle.follow(flowField);
+                    particle.update();
+                    particle.show();
+                    particle.edges();
+                    return particle.life > 0;
+                });
+                
+                // Limit particle count
+                if (particles.length > 1000) {
+                    particles.splice(0, particles.length - 1000);
+                }
+                
+                // Update attractors slowly
+                attractors.forEach((attr, i) => {
+                    attr.x += p.sin(p.frameCount * 0.01 + i) * 2;
+                    attr.y += p.cos(p.frameCount * 0.01 + i) * 2;
+                    
+                    // Keep in bounds
+                    attr.x = p.constrain(attr.x, 0, p.width);
+                    attr.y = p.constrain(attr.y, 0, p.height);
+                });
+                
+                // Create echo waves on mouse click
+                if (p.mouseIsPressed && p.frameCount % 10 === 0) {
+                    echoWaves.push(new EchoWave(p.mouseX, p.mouseY));
+                }
+            };
+            
+            p.windowResized = () => {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+            
+            window.saveArt = () => {
+                let timestamp = new Date().getTime();
+                p.save(`digital-echoes-${timestamp}.png`);
+            };
+        });
+    </script>
+</body>
+</html>

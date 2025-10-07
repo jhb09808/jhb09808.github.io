@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerome's World</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        #custom-cursor {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: background-color 0.3s ease;
+            mix-blend-mode: difference;
+        }
+        
+        #custom-cursor.rainbow {
+            background: linear-gradient(45deg, red, yellow, lime, cyan, blue, magenta);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        #custom-cursor.neon {
+            background: rgb(0, 255, 255);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 1);
+            border: 2px solid rgba(0, 255, 255, 0.8);
+        }
+        
+        #custom-cursor.pastel {
+            background: rgb(255, 182, 193);
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.8);
+            border: 2px solid rgba(255, 182, 193, 0.8);
+        }
+        
+        #controls {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        button:hover {
+            transform: scale(1.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        button.rainbow {
+            background: linear-gradient(45deg, red, yellow, lime, cyan, blue, magenta);
+        }
+        
+        button.neon {
+            background: linear-gradient(45deg, rgb(0, 255, 255), rgb(255, 0, 255));
+        }
+        
+        button.pastel {
+            background: linear-gradient(45deg, rgb(255, 182, 193), rgb(255, 218, 185), rgb(221, 160, 221));
+        }
+        
+        #drawing-controls {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .control-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        #brush-size {
+            width: 150px;
+            position: absolute;
+            top: 200px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        #brush-size input {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            border-radius: 5px;
+        }
+        
+        #brush-size input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        #title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        #title h1 {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: -apple-system, sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        #title p {
+            color: rgba(255, 255, 255, 0.6);
+            font-family: -apple-system, sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin: 10px 0 0 0;
+            font-style: italic;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        #instructions p {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin: 5px 0;
+        }
+        
+        #instructions .highlight {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+        
+        .CTA {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) translateY(-120px);
+            display: flex;
+            gap: 30px;
+            z-index: 100;
+            justify-content: center;
+        }
+        
+        .CTA a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .CTA a::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .CTA a:hover {
+            color: rgba(255, 255, 255, 1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .CTA a:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="custom-cursor" class="rainbow"></div>
+    
+    <section>
+        <nav>
+            <div class="CTA">
+                <a href="#">Home</a>
+                <a href="#">About Me</a>
+                <a href="https://www.linkedin.com/in/jeromebustarga0321/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/jhb09808" target="_blank">Github</a>
+            </div>
+        </nav>
+    </section>
+    
+    <div id="title">
+        <h1>It's Jerome's World</h1>
+        <p>and you're just living in it.</p>
+    </div>
+    
+    <div id="instructions">
+        <p><span class="highlight">Click and drag</span> to draw</p>
+        <p><span class="highlight">Right side</span> for drawing tools</p>
+        <p><span class="highlight">Left side</span> for color palettes</p>
+    </div>
+    
+    <div id="controls">
+        <button class="rainbow" onclick="changeTheme('rainbow')" title="Rainbow Brush"></button>
+        <button class="neon" onclick="changeTheme('neon')" title="Neon Brush"></button>
+        <button class="pastel" onclick="changeTheme('pastel')" title="Pastel Brush"></button>
+    </div>
+    
+    <div id="drawing-controls">
+        <button class="control-button" onclick="clearCanvas()" title="Clear">🗑️</button>
+        <button class="control-button" onclick="saveDrawing()" title="Save">💾</button>
+        <button class="control-button" onclick="toggleEraser()" title="Eraser">✏️</button>
+    </div>
+    
+    <div id="brush-size">
+        <input type="range" min="1" max="50" value="10" oninput="setBrushSize(this.value)">
+    </div>
+
+    <script>
+        let currentTheme = 'rainbow';
+        let brushSize = 10;
+        let isErasing = false;
+        let isDrawing = false;
+        let myp5;
+        
+        const themes = {
+            rainbow: {
+                name: 'Rainbow Brush',
+                getColor: (frameCount) => {
+                    let hue = (frameCount * 2) % 360;
+                    return `hsl(${hue}, 100%, 50%)`;
+                }
+            },
+            neon: {
+                name: 'Neon Brush',
+                colors: [
+                    [0, 255, 255],    // Cyan
+                    [255, 0, 255],    // Magenta
+                    [255, 255, 0],    // Yellow
+                    [0, 255, 0],      // Green
+                ],
+                getColor: function() {
+                    return this.colors[Math.floor(Math.random() * this.colors.length)];
+                }
+            },
+            pastel: {
+                name: 'Pastel Brush',
+                colors: [
+                    [255, 182, 193], // Light pink
+                    [255, 218, 185], // Peach
+                    [221, 160, 221], // Plum
+                    [176, 224, 230], // Powder blue
+                    [255, 255, 224], // Light yellow
+                ],
+                getColor: function() {
+                    return this.colors[Math.floor(Math.random() * this.colors.length)];
+                }
+            }
+        };
+        
+        function changeTheme(theme) {
+            currentTheme = theme;
+            const cursor = document.getElementById('custom-cursor');
+            cursor.className = theme;
+        }
+        
+        function setBrushSize(size) {
+            brushSize = parseInt(size);
+        }
+        
+        function clearCanvas() {
+            if (myp5) {
+                myp5.clearDrawing();
+            }
+        }
+        
+        function saveDrawing() {
+            if (myp5) {
+                myp5.saveDrawing();
+            }
+        }
+        
+        function toggleEraser() {
+            isErasing = !isErasing;
+            const eraserBtn = document.querySelector('.control-button:nth-child(3)');
+            eraserBtn.textContent = isErasing ? '🖌️' : '✏️';
+        }
+        
+        // Track mouse movement for custom cursor
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // p5.js sketch
+        const sketch = (p) => {
+            let drawingLayer;
+            let particles = [];
+            
+            p.setup = () => {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                drawingLayer = p.createGraphics(p.width, p.height);
+                drawingLayer.clear();
+                p.colorMode(p.RGB);
+            };
+            
+            p.draw = () => {
+                p.background(0);
+                
+                // Display the drawing layer
+                p.image(drawingLayer, 0, 0);
+                
+                // Update and draw particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    let particle = particles[i];
+                    particle.update();
+                    particle.display();
+                    
+                    if (particle.isDead()) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                // Add particles when drawing
+                if (isDrawing && !isErasing) {
+                    for (let i = 0; i < 5; i++) {
+                        particles.push(new Particle(p.mouseX, p.mouseY));
+                    }
+                }
+            };
+            
+            p.mousePressed = () => {
+                isDrawing = true;
+            };
+            
+            p.mouseReleased = () => {
+                isDrawing = false;
+            };
+            
+            p.mouseDragged = () => {
+                if (isDrawing) {
+                    drawingLayer.push();
+                    
+                    if (isErasing) {
+                        // Eraser mode
+                        drawingLayer.erase();
+                        drawingLayer.noStroke();
+                        drawingLayer.fill(255);
+                        drawingLayer.ellipse(p.mouseX, p.mouseY, brushSize * 2);
+                        drawingLayer.noErase();
+                    } else {
+                        // Drawing mode with smooth gradient
+                        let theme = themes[currentTheme];
+                        
+                        // Calculate distance for smooth interpolation
+                        let d = p.dist(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
+                        let steps = p.max(1, d);
+                        
+                        for (let i = 0; i <= steps; i++) {
+                            let t = i / steps;
+                            let x = p.lerp(p.pmouseX, p.mouseX, t);
+                            let y = p.lerp(p.pmouseY, p.mouseY, t);
+                            
+                            drawingLayer.noStroke();
+                            
+                            if (currentTheme === 'rainbow') {
+                                // Smooth rainbow gradient
+                                let hue = ((p.frameCount + i) * 2) % 360;
+                                drawingLayer.colorMode(p.HSL);
+                                // Main brush stroke
+                                drawingLayer.fill(hue, 100, 50, 100);
+                                drawingLayer.ellipse(x, y, brushSize);
+                                // Glow layer
+                                drawingLayer.fill(hue, 80, 60, 30);
+                                drawingLayer.ellipse(x, y, brushSize * 1.5);
+                            } else if (currentTheme === 'neon') {
+                                // Neon gradient effect
+                                drawingLayer.colorMode(p.RGB);
+                                // Interpolate between two neon colors
+                                let color1 = [0, 255, 255];
+                                let color2 = [255, 0, 255];
+                                let lerpAmount = (p.sin(p.frameCount * 0.05 + i * 0.1) + 1) / 2;
+                                let r = p.lerp(color1[0], color2[0], lerpAmount);
+                                let g = p.lerp(color1[1], color2[1], lerpAmount);
+                                let b = p.lerp(color1[2], color2[2], lerpAmount);
+                                
+                                // Glow layers
+                                drawingLayer.fill(r, g, b, 20);
+                                drawingLayer.ellipse(x, y, brushSize * 2);
+                                drawingLayer.fill(r, g, b, 50);
+                                drawingLayer.ellipse(x, y, brushSize * 1.5);
+                                drawingLayer.fill(r, g, b, 150);
+                                drawingLayer.ellipse(x, y, brushSize);
+                            } else if (currentTheme === 'pastel') {
+                                // Smooth pastel gradient
+                                drawingLayer.colorMode(p.RGB);
+                                let colors = theme.colors;
+                                let index = (p.frameCount * 0.02) % colors.length;
+                                let nextIndex = (index + 1) % colors.length;
+                                let lerpAmount = (index % 1);
+                                
+                                let color1 = colors[p.floor(index)];
+                                let color2 = colors[p.floor(nextIndex)];
+                                
+                                let r = p.lerp(color1[0], color2[0], lerpAmount);
+                                let g = p.lerp(color1[1], color2[1], lerpAmount);
+                                let b = p.lerp(color1[2], color2[2], lerpAmount);
+                                
+                                // Soft pastel layers
+                                drawingLayer.fill(r, g, b, 30);
+                                drawingLayer.ellipse(x, y, brushSize * 1.8);
+                                drawingLayer.fill(r, g, b, 100);
+                                drawingLayer.ellipse(x, y, brushSize);
+                            }
+                        }
+                    }
+                    
+                    drawingLayer.pop();
+                }
+            };
+            
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = p.random(-2, 2);
+                    this.vy = p.random(-2, 2);
+                    this.life = 255;
+                    this.size = p.random(2, 5);
+                    
+                    let theme = themes[currentTheme];
+                    if (currentTheme === 'rainbow') {
+                        let hue = (p.frameCount * 2) % 360;
+                        this.color = p.color(`hsl(${hue}, 100%, 50%)`);
+                    } else {
+                        let c = theme.getColor();
+                        this.color = p.color(...c);
+                    }
+                }
+                
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.1;
+                    this.life -= 5;
+                }
+                
+                display() {
+                    p.noStroke();
+                    this.color.setAlpha(this.life);
+                    p.fill(this.color);
+                    p.ellipse(this.x, this.y, this.size);
+                }
+                
+                isDead() {
+                    return this.life <= 0;
+                }
+            }
+            
+            p.clearDrawing = () => {
+                drawingLayer.clear();
+                particles = [];
+            };
+            
+            p.saveDrawing = () => {
+                p.saveCanvas('jerome-drawing', 'png');
+            };
+            
+            p.windowResized = () => {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+                let temp = drawingLayer.get();
+                drawingLayer = p.createGraphics(p.width, p.height);
+                drawingLayer.image(temp, 0, 0);
+            };
+        };
+        
+        // Create p5 instance
+        myp5 = new p5(sketch);
+    </script>
+</body>
+</html>

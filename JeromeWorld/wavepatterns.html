@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerome's World</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        #custom-cursor {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: background-color 0.3s ease;
+            mix-blend-mode: difference;
+        }
+        
+        #custom-cursor.disco {
+            background: rgb(255, 0, 128);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
+            border: 2px solid rgba(255, 0, 128, 0.8);
+        }
+        
+        #custom-cursor.neon {
+            background: rgb(0, 255, 0);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            border: 2px solid rgba(0, 255, 0, 0.8);
+        }
+        
+        #custom-cursor.ocean {
+            background: rgb(0, 150, 255);
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.8);
+            border: 2px solid rgba(0, 150, 255, 0.8);
+        }
+        
+        #controls {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        button:hover {
+            transform: scale(1.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        button.disco {
+            background: linear-gradient(45deg, rgb(255, 0, 128), rgb(0, 255, 255));
+        }
+        
+        button.neon {
+            background: linear-gradient(45deg, rgb(255, 0, 255), rgb(0, 255, 0));
+        }
+        
+        button.ocean {
+            background: linear-gradient(45deg, rgb(0, 150, 255), rgb(0, 255, 200));
+        }
+        
+        #title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        #title h1 {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: -apple-system, sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        #title p {
+            color: rgba(255, 255, 255, 0.6);
+            font-family: -apple-system, sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin: 10px 0 0 0;
+            font-style: italic;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        #instructions p {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin: 5px 0;
+        }
+        
+        #instructions .highlight {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+        
+        .CTA {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) translateY(-120px);
+            display: flex;
+            gap: 30px;
+            z-index: 100;
+            justify-content: center;
+        }
+        
+        .CTA a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .CTA a::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .CTA a:hover {
+            color: rgba(255, 255, 255, 1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .CTA a:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="custom-cursor" class="disco"></div>
+    
+    <section>
+        <nav>
+            <div class="CTA">
+                <a href="#">Home</a>
+                <a href="#">About Me</a>
+                <a href="https://www.linkedin.com/in/jeromebustarga0321/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/jhb09808" target="_blank">Github</a>
+            </div>
+        </nav>
+    </section>
+    
+    <div id="title">
+        <h1>It's Jerome's</h1>
+        <h1>World</h1>
+        <p>and you're just living in it.</p>
+    </div>
+    <div id="subtitle"></div>
+    
+    <div id="instructions">
+        <p><span class="highlight">Move your mouse</span> to create waves</p>
+        <p><span class="highlight">Click</span> to drop ripples</p>
+        <p><span class="highlight">Select a color</span> on the left to change wave colors</p>
+    </div>
+    
+    <div id="controls">
+        <button class="disco" onclick="changeTheme('disco')" title="Disco Fever"></button>
+        <button class="neon" onclick="changeTheme('neon')" title="Neon Dreams"></button>
+        <button class="ocean" onclick="changeTheme('ocean')" title="Ocean Vibes"></button>
+    </div>
+
+    <script>
+        let currentTheme = 'disco';
+        const themes = {
+            disco: {
+                name: 'Disco Fever',
+                colors: [
+                    [255, 0, 128],    // Hot pink
+                    [0, 255, 255],    // Cyan
+                    [255, 128, 0],    // Orange
+                    [128, 0, 255],    // Purple
+                    [0, 255, 128],    // Mint
+                ],
+                behavior: 'groovy'
+            },
+            neon: {
+                name: 'Neon Dreams',
+                colors: [
+                    [255, 0, 255],    // Magenta
+                    [0, 255, 0],      // Lime
+                    [255, 255, 0],    // Yellow
+                    [0, 128, 255],    // Electric blue
+                    [255, 0, 0],      // Red
+                ],
+                behavior: 'electric'
+            },
+            ocean: {
+                name: 'Ocean Vibes',
+                colors: [
+                    [0, 150, 255],    // Ocean blue
+                    [0, 255, 200],    // Turquoise
+                    [0, 100, 150],    // Deep blue
+                    [100, 255, 255],  // Light cyan
+                    [255, 255, 255],  // Foam white
+                ],
+                behavior: 'flowing'
+            }
+        };
+        
+        function changeTheme(theme) {
+            currentTheme = theme;
+            // Update cursor color
+            const cursor = document.getElementById('custom-cursor');
+            cursor.className = theme;
+        }
+        
+        // Track mouse movement for custom cursor
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // Hide cursor when mouse leaves window
+        document.addEventListener('mouseleave', () => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.display = 'none';
+        });
+        
+        // Show cursor when mouse enters window
+        document.addEventListener('mouseenter', () => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.display = 'block';
+        });
+        
+        new p5((p) => {
+            let ripples = [];
+            let waveOffset = 0;
+            let mouseWave = { x: 0, y: 0, strength: 0 };
+            
+            class Ripple {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = 0;
+                    this.maxRadius = p.random(200, 400);
+                    this.speed = p.random(2, 4);
+                    this.color = color;
+                    this.life = 255;
+                }
+                
+                update() {
+                    this.radius += this.speed;
+                    this.life = p.map(this.radius, 0, this.maxRadius, 255, 0);
+                }
+                
+                display() {
+                    p.noFill();
+                    // Multiple rings for each ripple
+                    for (let i = 0; i < 3; i++) {
+                        let r = this.radius - i * 20;
+                        if (r > 0) {
+                            p.stroke(...this.color, this.life - i * 50);
+                            p.strokeWeight(2);
+                            p.ellipse(this.x, this.y, r * 2);
+                        }
+                    }
+                }
+                
+                isDead() {
+                    return this.radius > this.maxRadius;
+                }
+            }
+            
+            p.setup = () => {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.colorMode(p.RGB);
+                p.background(0);
+            };
+            
+            p.draw = () => {
+                // Fade background
+                p.fill(0, 15);
+                p.noStroke();
+                p.rect(0, 0, p.width, p.height);
+                
+                // Update wave offset
+                waveOffset += 0.02;
+                
+                // Update mouse wave influence
+                mouseWave.x = p.lerp(mouseWave.x, p.mouseX, 0.1);
+                mouseWave.y = p.lerp(mouseWave.y, p.mouseY, 0.1);
+                let mouseSpeed = p.dist(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
+                mouseWave.strength = p.lerp(mouseWave.strength, mouseSpeed, 0.1);
+                
+                // Draw wave grid
+                let theme = themes[currentTheme];
+                let spacing = 30;
+                
+                for (let x = 0; x < p.width + spacing; x += spacing) {
+                    for (let y = 0; y < p.height + spacing; y += spacing) {
+                        // Calculate distance from mouse
+                        let d = p.dist(x, y, mouseWave.x, mouseWave.y);
+                        
+                        // Wave calculation
+                        let wave = p.sin(x * 0.01 + waveOffset) * p.cos(y * 0.01 + waveOffset);
+                        let mouseInfluence = 0;
+                        
+                        if (d < 200) {
+                            // When moving fast, SHRINK the dots instead of growing them
+                            let distanceFactor = p.map(d, 0, 200, 1, 0);
+                            // Invert the speed influence - faster = smaller
+                            let speedFactor = p.map(mouseWave.strength, 0, 20, 1, -0.5);
+                            mouseInfluence = distanceFactor * speedFactor;
+                        }
+                        
+                        // Size based on wave and mouse
+                        let baseSize = p.map(wave, -1, 1, 2, 8);
+                        let size = baseSize + mouseInfluence * 4;
+                        size = p.constrain(size, 1, 10); // Ensure dots don't disappear or get too big
+                        
+                        // Color gets more vibrant near mouse
+                        let colorIndex = p.floor(p.map(wave + (d < 200 ? 0.5 : 0), -1, 2, 0, theme.colors.length));
+                        colorIndex = p.constrain(colorIndex, 0, theme.colors.length - 1);
+                        let color = theme.colors[colorIndex];
+                        
+                        // Draw point
+                        p.noStroke();
+                        let alpha = p.map(wave, -1, 1, 100, 200);
+                        if (d < 200 && mouseWave.strength > 5) {
+                            alpha = p.min(alpha + 50, 255); // Brighten near mouse when moving
+                        }
+                        p.fill(...color, alpha);
+                        p.ellipse(x, y, size);
+                    }
+                }
+                
+                // Draw continuous wave from mouse movement
+                if (p.frameCount % 3 === 0 && mouseSpeed > 2) {
+                    let theme = themes[currentTheme];
+                    let color = p.random(theme.colors);
+                    ripples.push(new Ripple(p.mouseX, p.mouseY, color));
+                }
+                
+                // Update and draw ripples
+                ripples = ripples.filter(ripple => {
+                    ripple.update();
+                    ripple.display();
+                    return !ripple.isDead();
+                });
+                
+                // Limit ripples
+                if (ripples.length > 50) {
+                    ripples.splice(0, ripples.length - 50);
+                }
+            };
+            
+            p.mousePressed = () => {
+                // Create multiple ripples on click
+                let theme = themes[currentTheme];
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        let color = p.random(theme.colors);
+                        ripples.push(new Ripple(p.mouseX, p.mouseY, color));
+                    }, i * 100);
+                }
+            };
+            
+            p.windowResized = () => {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        });
+    </script>
+</body>
+</html>

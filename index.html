@@ -78,6 +78,8 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; }
 .filter-btn { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: #f0f0f0; color: #555; }
 .filter-btn.active { background: #0054A6; color: #fff; }
+.time-row { display: flex; gap: 10px; }
+.time-row > div { flex: 1; }
 </style>
 </head>
 <body>
@@ -137,21 +139,21 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 <div><div class="card-title">Pizza from Faculty Lunch</div><div class="card-meta">Harper Center, Rm 3028</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:8px;">~15 servings remaining</div>
+<div class="card-meta" style="margin-top:8px;">~15 servings · Available until 2:30 PM</div>
 </div>
 <div class="card" onclick="showScreen('user-detail')">
 <div style="display:flex;justify-content:space-between;align-items:start;">
 <div><div class="card-title">Sandwiches from Career Fair</div><div class="card-meta">Skutt Student Center</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:8px;">~8 servings remaining</div>
+<div class="card-meta" style="margin-top:8px;">~8 servings · Available until 3:00 PM</div>
 </div>
 <div class="card" onclick="showScreen('user-detail')">
 <div style="display:flex;justify-content:space-between;align-items:start;">
 <div><div class="card-title">Fruit & Pastries</div><div class="card-meta">Hitchcock 201</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:8px;">~20 servings remaining</div>
+<div class="card-meta" style="margin-top:8px;">~20 servings · Available until 4:00 PM</div>
 </div>
 </div>
 <div class="tab-bar">
@@ -176,7 +178,7 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 <div class="detail-row"><div class="detail-icon">&#128205;</div><div class="detail-content"><div class="detail-label">Location</div><div class="detail-value">Harper Center, Room 3028</div></div></div>
 <div class="detail-row"><div class="detail-icon">&#128587;</div><div class="detail-content"><div class="detail-label">Directions</div><div class="detail-value">Enter through east door, take elevator to 3rd floor, conference room at end of hall</div></div></div>
 <div class="detail-row"><div class="detail-icon">&#127858;</div><div class="detail-content"><div class="detail-label">Servings remaining</div><div class="detail-value">10 – 15 servings</div></div></div>
-<div class="detail-row"><div class="detail-icon">&#9200;</div><div class="detail-content"><div class="detail-label">Expires</div><div class="detail-value">2:30 PM today</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#9200;</div><div class="detail-content"><div class="detail-label">Pickup window</div><div class="detail-value">12:30 PM – 2:30 PM today</div></div></div>
 </div>
 </div>
 
@@ -223,26 +225,26 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 <span class="filter-btn">Most Servings</span>
 <span class="filter-btn">Expiring Soon</span>
 </div>
-<div class="card" onclick="showScreen('user-detail')">
+<div class="card" onclick="showScreen('org-detail')">
 <div style="display:flex;justify-content:space-between;align-items:start;">
 <div><div class="card-title">Pizza from Faculty Lunch</div><div class="card-meta">Harper Center, Rm 3028</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:8px;">~15 servings remaining</div>
+<div class="card-meta" style="margin-top:8px;">~15 servings · Available until 2:30 PM</div>
 </div>
-<div class="card" onclick="showScreen('user-detail')">
+<div class="card" onclick="showScreen('org-detail')">
 <div style="display:flex;justify-content:space-between;align-items:start;">
 <div><div class="card-title">Sandwiches from Career Fair</div><div class="card-meta">Skutt Student Center</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:8px;">~8 servings remaining</div>
+<div class="card-meta" style="margin-top:8px;">~8 servings · Available until 3:00 PM</div>
 </div>
-<div class="card" onclick="showScreen('user-detail')">
+<div class="card" onclick="showScreen('org-detail')">
 <div style="display:flex;justify-content:space-between;align-items:start;">
 <div><div class="card-title">Fruit & Pastries</div><div class="card-meta">Hitchcock 201</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:8px;">~20 servings remaining</div>
+<div class="card-meta" style="margin-top:8px;">~20 servings · Available until 4:00 PM</div>
 </div>
 </div>
 <div class="tab-bar">
@@ -253,10 +255,38 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 </div>
 </div>
 
+<!-- EVENT ORGANIZER: Event Details -->
+<div class="screen" id="org-detail">
+<div class="status-bar dark"><span>9:41</span><span></span></div>
+<div style="padding:12px 20px;">
+<span class="back-btn" onclick="showScreen('org-home')" style="color:#0054A6;">&#8592; Back</span>
+</div>
+<div class="scrollable" style="padding:0 20px 40px;">
+<h2 style="font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:12px;">Pizza from Faculty Lunch</h2>
+<div style="background:#f0f4f8;border-radius:14px;height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+<div style="color:#aaa;font-size:14px;">Event Photo</div>
+</div>
+<p style="font-size:14px;color:#555;line-height:1.6;margin-bottom:20px;">Leftover pizza and salad from the department meeting. Pepperoni, cheese, and garden salad with Italian dressing.</p>
+<div class="detail-row"><div class="detail-icon">&#128205;</div><div class="detail-content"><div class="detail-label">Location</div><div class="detail-value">Harper Center, Room 3028</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#128587;</div><div class="detail-content"><div class="detail-label">Directions</div><div class="detail-value">Enter through east door, take elevator to 3rd floor, conference room at end of hall</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#127858;</div><div class="detail-content"><div class="detail-label">Servings remaining</div><div class="detail-value">10 – 15 servings</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#9200;</div><div class="detail-content"><div class="detail-label">Pickup window</div><div class="detail-value">12:30 PM – 2:30 PM today</div></div></div>
+</div>
+<div class="tab-bar">
+<div class="tab" onclick="showScreen('org-home')"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
+<div class="tab" onclick="showScreen('org-create')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Create</span></div>
+<div class="tab" onclick="showScreen('org-myevents')"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>My Events</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
 <!-- EVENT ORGANIZER: Create Event -->
 <div class="screen gradient-bg" id="org-create">
 <div class="status-bar light"><span>9:41</span><span></span></div>
-<div style="padding:0 20px;">
+<div style="padding:8px 20px 0;">
+<span class="back-btn" onclick="showScreen('org-myevents')" style="color:rgba(255,255,255,0.8);">&#8592; Back</span>
+</div>
+<div style="padding:8px 20px 0;">
 <h1 style="font-size:28px;font-weight:700;color:#fff;margin-bottom:4px;">Create Event</h1>
 <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:12px;">Post surplus food for campus</p>
 </div>
@@ -268,8 +298,14 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 <div style="margin-bottom:14px;"><label class="label label-light">Directions</label><input class="input input-dark" value="Room 3028, 3rd floor, east entrance"></div>
 <div style="margin-bottom:14px;"><label class="label label-light">Servings Estimate</label>
 <div class="slider-container"><input type="range" min="1" max="50" value="15"><div class="slider-labels"><span>1</span><span>25</span><span>50</span></div></div></div>
-<div style="margin-bottom:24px;"><label class="label label-light">Expires At</label><input class="input input-dark" type="time" value="14:30"></div>
-<button class="btn btn-white" style="width:100%;" onclick="showScreen('org-myevents')">Post Event</button>
+<div style="margin-bottom:14px;">
+<label class="label label-light">Pickup Window</label>
+<div class="time-row">
+<div><label class="label label-light" style="font-size:11px;">Available From</label><input class="input input-dark" type="time" value="12:30"></div>
+<div><label class="label label-light" style="font-size:11px;">Available Until</label><input class="input input-dark" type="time" value="14:30"></div>
+</div>
+</div>
+<button class="btn btn-white" style="width:100%;margin-top:10px;" onclick="showScreen('org-myevents')">Post Event</button>
 </div>
 <div class="tab-bar">
 <div class="tab" onclick="showScreen('org-home')"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
@@ -291,7 +327,7 @@ body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; j
 <div><div class="card-title">Pizza from Faculty Lunch</div><div class="card-meta">Harper Center, Rm 3028</div></div>
 <span class="badge badge-active">Active</span>
 </div>
-<div class="card-meta" style="margin-top:4px;">Posted 25 min ago</div>
+<div class="card-meta" style="margin-top:4px;">Pickup: 12:30 PM – 2:30 PM</div>
 <div style="display:flex;gap:8px;margin-top:12px;">
 <button class="action-btn" style="flex:1;background:#f0f4f8;color:#0054A6;" onclick="showScreen('org-create')">Edit</button>
 <button class="action-btn" style="flex:1;background:#fee2e2;color:#dc2626;">Close Event</button>
@@ -439,7 +475,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const ind = document.getElementById('home-ind');
-  const darkScreens = ['user-home','user-detail','user-settings','org-home','org-myevents'];
+  const darkScreens = ['user-home','user-detail','user-settings','org-home','org-detail','org-myevents'];
   ind.className = darkScreens.includes(id) ? 'home-indicator dark' : 'home-indicator';
 }
 </script>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlueJay-Bites Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+.iphone-frame { position: relative; width: 393px; height: 852px; background: #1c1c1e; border-radius: 55px; padding: 12px; box-shadow: 0 0 0 2px #333, 0 0 0 4px #1c1c1e, 0 0 0 6px #333, 0 40px 80px rgba(0,0,0,0.6), inset 0 0 4px rgba(255,255,255,0.05); }
+.iphone-frame::before { content: ''; position: absolute; left: -3px; top: 160px; width: 3px; height: 32px; background: #333; border-radius: 2px 0 0 2px; box-shadow: 0 45px 0 #333, 0 90px 0 #333; }
+.iphone-frame::after { content: ''; position: absolute; right: -3px; top: 200px; width: 3px; height: 64px; background: #333; border-radius: 0 2px 2px 0; }
+.phone-screen { width: 100%; height: 100%; border-radius: 44px; overflow: hidden; position: relative; background: #fff; }
+.dynamic-island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 126px; height: 36px; background: #000; border-radius: 20px; z-index: 100; }
+.home-indicator { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; z-index: 100; }
+.home-indicator.dark { background: rgba(0,0,0,0.2); }
+.screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; }
+.screen.active { display: flex; }
+.status-bar { height: 54px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 32px 6px; font-size: 14px; font-weight: 600; }
+.status-bar.light { color: #fff; }
+.status-bar.dark { color: #1a1a2e; }
+.scrollable { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scrollable::-webkit-scrollbar { display: none; }
+.tab-bar { display: flex; justify-content: space-around; align-items: center; height: 84px; background: #001F3F; padding-bottom: 20px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+.tab.active { color: #FFC72C; }
+.tab svg { width: 22px; height: 22px; fill: currentColor; }
+.btn { padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s; text-align: center; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: #0054A6; color: #fff; }
+.btn-white { background: #fff; color: #0054A6; }
+.btn-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.4); color: #fff; }
+.btn-danger { background: #fee2e2; color: #dc2626; }
+.btn-ghost { background: #f5f5f5; color: #333; }
+.input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid #e0e0e0; font-size: 15px; font-family: 'DM Sans', sans-serif; outline: none; background: #fff; }
+.input:focus { border-color: #0054A6; }
+.input-dark { background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; }
+.input-dark::placeholder { color: rgba(255,255,255,0.5); }
+.label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; display: block; }
+.label-light { color: rgba(255,255,255,0.8); }
+.card { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; cursor: pointer; transition: transform 0.15s; }
+.card:active { transform: scale(0.98); }
+.card-title { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+.card-meta { font-size: 13px; color: #888; line-height: 1.5; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-active { background: #dcfce7; color: #166534; }
+.badge-closed { background: #f1f1f1; color: #888; }
+.badge-role { background: #e0ecff; color: #0054A6; }
+.gradient-bg { background: linear-gradient(135deg, #0054A6 0%, #001F3F 100%); }
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.metric-card { background: rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; text-align: center; }
+.metric-num { font-size: 28px; font-weight: 700; color: #FFC72C; }
+.metric-label { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.toggle-track { width: 48px; height: 28px; background: #ddd; border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; }
+.toggle-track.on { background: #0054A6; }
+.toggle-knob { width: 24px; height: 24px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.toggle-track.on .toggle-knob { transform: translateX(20px); }
+.event-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.event-row:last-child { border-bottom: none; }
+.back-btn { cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 4px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #e0ecff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: #0054A6; }
+.section-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px; }
+.detail-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.detail-icon { width: 36px; height: 36px; border-radius: 10px; background: #f0f4f8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+.detail-content { flex: 1; }
+.detail-label { font-size: 12px; color: #888; }
+.detail-value { font-size: 14px; color: #1a1a2e; font-weight: 500; }
+.action-btn { padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+.page-title { color: #fff; text-align: center; margin-bottom: 32px; }
+.page-title h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.page-title p { font-size: 14px; color: rgba(255,255,255,0.5); }
+.wrapper { display: flex; flex-direction: column; align-items: center; }
+.slider-container { margin: 8px 0; }
+.slider-container input[type="range"] { width: 100%; accent-color: #FFC72C; }
+.slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.6); }
+.photo-placeholder { background: #f0f4f8; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 14px; border: 2px dashed #ddd; }
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+.filter-btn { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: #f0f0f0; color: #555; }
+.filter-btn.active { background: #0054A6; color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+<div class="page-title">
+<h1>BlueJay-Bites</h1>
+<p>Interactive Prototype — Click through each role</p>
+</div>
+
+<div class="iphone-frame">
+<div class="phone-screen">
+<div class="dynamic-island"></div>
+<div class="home-indicator dark" id="home-ind"></div>
+
+<!-- LOGIN -->
+<div class="screen active gradient-bg" id="login">
+<div class="status-bar light"><span>9:41</span><span></span></div>
+<div class="scrollable" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;">
+<div style="width:64px;height:64px;background:#FFC72C;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+<span style="font-size:28px;font-weight:700;color:#001F3F;">B</span>
+</div>
+<h1 style="color:#fff;font-size:28px;font-weight:700;margin-bottom:4px;">BlueJay-Bites</h1>
+<p style="color:rgba(255,255,255,0.7);font-size:15px;margin-bottom:40px;">Find free food on campus</p>
+<div style="width:100%;margin-bottom:16px;">
+<label class="label label-light">Email</label>
+<input class="input input-dark" placeholder="your.email@creighton.edu" value="demo@creighton.edu">
+</div>
+<div style="width:100%;margin-bottom:24px;">
+<label class="label label-light">Password</label>
+<input class="input input-dark" type="password" placeholder="Enter password" value="password123">
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;width:100%;">
+<button class="btn btn-white" style="width:100%;" onclick="showScreen('user-home')">Log in as User</button>
+<button class="btn btn-outline" style="width:100%;" onclick="showScreen('org-home')">Log in as Event Organizer</button>
+<button class="btn btn-outline" style="width:100%;" onclick="showScreen('admin-home')">Log in as Admin</button>
+</div>
+<p style="color:rgba(255,255,255,0.4);font-size:12px;margin-top:32px;">Prototype Demo — Select a role to explore</p>
+</div>
+</div>
+
+<!-- USER: Home -->
+<div class="screen" id="user-home">
+<div class="status-bar dark"><span>9:41</span><span></span></div>
+<div style="padding:0 20px 8px;">
+<h1 style="font-size:28px;font-weight:700;color:#1a1a2e;">Events</h1>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div class="filter-bar">
+<span class="filter-btn active">All</span>
+<span class="filter-btn">Nearest</span>
+<span class="filter-btn">Most Servings</span>
+<span class="filter-btn">Expiring Soon</span>
+</div>
+<div class="card" onclick="showScreen('user-detail')">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Pizza from Faculty Lunch</div><div class="card-meta">Harper Center, Rm 3028</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:8px;">~15 servings remaining</div>
+</div>
+<div class="card" onclick="showScreen('user-detail')">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Sandwiches from Career Fair</div><div class="card-meta">Skutt Student Center</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:8px;">~8 servings remaining</div>
+</div>
+<div class="card" onclick="showScreen('user-detail')">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Fruit & Pastries</div><div class="card-meta">Hitchcock 201</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:8px;">~20 servings remaining</div>
+</div>
+</div>
+<div class="tab-bar">
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
+<div class="tab" onclick="showScreen('user-settings')"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span>Settings</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- USER: Event Details -->
+<div class="screen" id="user-detail">
+<div class="status-bar dark"><span>9:41</span><span></span></div>
+<div style="padding:12px 20px;">
+<span class="back-btn" onclick="showScreen('user-home')" style="color:#0054A6;">&#8592; Back</span>
+</div>
+<div class="scrollable" style="padding:0 20px 40px;">
+<h2 style="font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:12px;">Pizza from Faculty Lunch</h2>
+<div style="background:#f0f4f8;border-radius:14px;height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+<div style="color:#aaa;font-size:14px;">Event Photo</div>
+</div>
+<p style="font-size:14px;color:#555;line-height:1.6;margin-bottom:20px;">Leftover pizza and salad from the department meeting. Pepperoni, cheese, and garden salad with Italian dressing.</p>
+<div class="detail-row"><div class="detail-icon">&#128205;</div><div class="detail-content"><div class="detail-label">Location</div><div class="detail-value">Harper Center, Room 3028</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#128587;</div><div class="detail-content"><div class="detail-label">Directions</div><div class="detail-value">Enter through east door, take elevator to 3rd floor, conference room at end of hall</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#127858;</div><div class="detail-content"><div class="detail-label">Servings remaining</div><div class="detail-value">10 – 15 servings</div></div></div>
+<div class="detail-row"><div class="detail-icon">&#9200;</div><div class="detail-content"><div class="detail-label">Expires</div><div class="detail-value">2:30 PM today</div></div></div>
+</div>
+</div>
+
+<!-- USER: Settings -->
+<div class="screen" id="user-settings">
+<div class="status-bar dark"><span>9:41</span><span></span></div>
+<div style="padding:12px 20px 0;">
+<h1 style="font-size:28px;font-weight:700;color:#1a1a2e;">Settings</h1>
+</div>
+<div class="scrollable" style="padding:20px 20px 100px;">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;padding:16px;background:#f8f9fa;border-radius:14px;">
+<div class="avatar">JB</div>
+<div><div style="font-weight:600;font-size:15px;">Jerome Bustarga</div><div style="font-size:13px;color:#888;">demo@creighton.edu</div></div>
+</div>
+<label class="label">Notifications</label>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+<span style="font-size:14px;">Push notifications</span>
+<div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;margin-bottom:24px;">
+<span style="font-size:14px;">Email notifications</span>
+<div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+</div>
+<button class="btn btn-ghost" style="width:100%;margin-bottom:12px;">Save Preferences</button>
+<button class="btn btn-danger" style="width:100%;" onclick="showScreen('login')">Log Out</button>
+</div>
+<div class="tab-bar">
+<div class="tab" onclick="showScreen('user-home')"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span>Settings</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- EVENT ORGANIZER: Home -->
+<div class="screen" id="org-home">
+<div class="status-bar dark"><span>9:41</span><span></span></div>
+<div style="padding:0 20px 8px;">
+<h1 style="font-size:28px;font-weight:700;color:#1a1a2e;">Events</h1>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div class="filter-bar">
+<span class="filter-btn active">All</span>
+<span class="filter-btn">Nearest</span>
+<span class="filter-btn">Most Servings</span>
+<span class="filter-btn">Expiring Soon</span>
+</div>
+<div class="card" onclick="showScreen('user-detail')">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Pizza from Faculty Lunch</div><div class="card-meta">Harper Center, Rm 3028</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:8px;">~15 servings remaining</div>
+</div>
+<div class="card" onclick="showScreen('user-detail')">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Sandwiches from Career Fair</div><div class="card-meta">Skutt Student Center</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:8px;">~8 servings remaining</div>
+</div>
+<div class="card" onclick="showScreen('user-detail')">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Fruit & Pastries</div><div class="card-meta">Hitchcock 201</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:8px;">~20 servings remaining</div>
+</div>
+</div>
+<div class="tab-bar">
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
+<div class="tab" onclick="showScreen('org-create')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Create</span></div>
+<div class="tab" onclick="showScreen('org-myevents')"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>My Events</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- EVENT ORGANIZER: Create Event -->
+<div class="screen gradient-bg" id="org-create">
+<div class="status-bar light"><span>9:41</span><span></span></div>
+<div style="padding:0 20px;">
+<h1 style="font-size:28px;font-weight:700;color:#fff;margin-bottom:4px;">Create Event</h1>
+<p style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:12px;">Post surplus food for campus</p>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div style="margin-bottom:14px;"><label class="label label-light">Title</label><input class="input input-dark" value="Pizza from Faculty Lunch"></div>
+<div style="margin-bottom:14px;"><label class="label label-light">Description</label><textarea class="input input-dark" style="height:70px;resize:none;">Leftover pizza and salad from the department meeting. Pepperoni, cheese, and garden salad.</textarea></div>
+<div style="margin-bottom:14px;"><label class="label label-light">Photo</label><div class="photo-placeholder" style="height:80px;border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);">Tap to upload photo</div></div>
+<div style="margin-bottom:14px;"><label class="label label-light">Location</label><select class="input input-dark" style="appearance:auto;"><option>Harper Center</option><option>Skutt Student Center</option><option>Hitchcock</option><option>Creighton Hall</option></select></div>
+<div style="margin-bottom:14px;"><label class="label label-light">Directions</label><input class="input input-dark" value="Room 3028, 3rd floor, east entrance"></div>
+<div style="margin-bottom:14px;"><label class="label label-light">Servings Estimate</label>
+<div class="slider-container"><input type="range" min="1" max="50" value="15"><div class="slider-labels"><span>1</span><span>25</span><span>50</span></div></div></div>
+<div style="margin-bottom:24px;"><label class="label label-light">Expires At</label><input class="input input-dark" type="time" value="14:30"></div>
+<button class="btn btn-white" style="width:100%;" onclick="showScreen('org-myevents')">Post Event</button>
+</div>
+<div class="tab-bar">
+<div class="tab" onclick="showScreen('org-home')"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Create</span></div>
+<div class="tab" onclick="showScreen('org-myevents')"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>My Events</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- EVENT ORGANIZER: My Events -->
+<div class="screen" id="org-myevents">
+<div class="status-bar dark"><span>9:41</span><span></span></div>
+<div style="padding:0 20px 8px;">
+<h1 style="font-size:28px;font-weight:700;color:#1a1a2e;">My Events</h1>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Pizza from Faculty Lunch</div><div class="card-meta">Harper Center, Rm 3028</div></div>
+<span class="badge badge-active">Active</span>
+</div>
+<div class="card-meta" style="margin-top:4px;">Posted 25 min ago</div>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button class="action-btn" style="flex:1;background:#f0f4f8;color:#0054A6;" onclick="showScreen('org-create')">Edit</button>
+<button class="action-btn" style="flex:1;background:#fee2e2;color:#dc2626;">Close Event</button>
+</div>
+</div>
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Bagels from Seminar</div><div class="card-meta">Creighton Hall 104</div></div>
+<span class="badge badge-closed">Closed</span>
+</div>
+<div class="card-meta" style="margin-top:4px;">Closed 2 hours ago</div>
+</div>
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:start;">
+<div><div class="card-title">Cookies from Open House</div><div class="card-meta">Hixson-Lied G05</div></div>
+<span class="badge badge-closed">Closed</span>
+</div>
+<div class="card-meta" style="margin-top:4px;">Closed yesterday</div>
+</div>
+</div>
+<div class="tab-bar">
+<div class="tab" onclick="showScreen('org-home')"><svg viewBox="0 0 24 24"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg><span>Home</span></div>
+<div class="tab" onclick="showScreen('org-create')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Create</span></div>
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>My Events</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- ADMIN: All Events -->
+<div class="screen gradient-bg" id="admin-home">
+<div class="status-bar light"><span>9:41</span><span></span></div>
+<div style="padding:0 20px 8px;">
+<h1 style="font-size:28px;font-weight:700;color:#fff;">All Events</h1>
+<p style="color:rgba(255,255,255,0.7);font-size:14px;">Platform oversight</p>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div class="event-row">
+<div><div style="font-weight:600;color:#fff;font-size:14px;">Pizza from Faculty Lunch</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">by Sodexo Dining — 25 min ago</div></div>
+<div style="display:flex;gap:6px;align-items:center;">
+<span class="action-btn" style="background:rgba(255,255,255,0.15);color:#fff;font-size:11px;padding:5px 10px;">Edit</span>
+<span class="action-btn" style="background:rgba(220,38,38,0.2);color:#fca5a5;font-size:11px;padding:5px 10px;">Close</span>
+<span class="badge badge-active">Active</span>
+</div>
+</div>
+<div class="event-row">
+<div><div style="font-weight:600;color:#fff;font-size:14px;">Sandwiches from Career Fair</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">by Student Gov — 1 hr ago</div></div>
+<div style="display:flex;gap:6px;align-items:center;">
+<span class="action-btn" style="background:rgba(255,255,255,0.15);color:#fff;font-size:11px;padding:5px 10px;">Edit</span>
+<span class="action-btn" style="background:rgba(220,38,38,0.2);color:#fca5a5;font-size:11px;padding:5px 10px;">Close</span>
+<span class="badge badge-active">Active</span>
+</div>
+</div>
+<div class="event-row">
+<div><div style="font-weight:600;color:#fff;font-size:14px;">Fruit & Pastries</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">by Dept. of Biology — 2 hrs ago</div></div>
+<div style="display:flex;gap:6px;align-items:center;">
+<span class="action-btn" style="background:rgba(255,255,255,0.15);color:#fff;font-size:11px;padding:5px 10px;">Edit</span>
+<span class="action-btn" style="background:rgba(220,38,38,0.2);color:#fca5a5;font-size:11px;padding:5px 10px;">Close</span>
+<span class="badge badge-active">Active</span>
+</div>
+</div>
+<div class="event-row">
+<div><div style="font-weight:600;color:#fff;font-size:14px;">Bagels from Seminar</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">by Dr. Smith — 3 hrs ago</div></div>
+<span class="badge badge-closed">Closed</span>
+</div>
+<div class="event-row">
+<div><div style="font-weight:600;color:#fff;font-size:14px;">Cookies from Open House</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">by Admissions — Yesterday</div></div>
+<span class="badge badge-closed">Closed</span>
+</div>
+<div class="event-row">
+<div><div style="font-weight:600;color:#fff;font-size:14px;">Tacos from Club Meeting</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">by Latin Club — Yesterday</div></div>
+<span class="badge badge-closed">Closed</span>
+</div>
+</div>
+<div class="tab-bar">
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>Events</span></div>
+<div class="tab" onclick="showScreen('admin-perms')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Permissions</span></div>
+<div class="tab" onclick="showScreen('admin-analytics')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg><span>Analytics</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- ADMIN: Permissions -->
+<div class="screen gradient-bg" id="admin-perms">
+<div class="status-bar light"><span>9:41</span><span></span></div>
+<div style="padding:0 20px 8px;">
+<h1 style="font-size:28px;font-weight:700;color:#fff;">Permissions</h1>
+<p style="color:rgba(255,255,255,0.7);font-size:14px;">Manage user roles</p>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div class="event-row"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;">EG</div><div><div style="font-weight:600;color:#fff;font-size:14px;">Erika Germinario</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">emg@creighton.edu</div></div></div><span class="badge badge-role">Event Organizer</span></div>
+<div class="event-row"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;">TO</div><div><div style="font-weight:600;color:#fff;font-size:14px;">Torin O'Connor</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">tpo@creighton.edu</div></div></div><span class="badge badge-role">Event Organizer</span></div>
+<div class="event-row"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;">YH</div><div><div style="font-weight:600;color:#fff;font-size:14px;">Yukiko Hughes</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">ymh@creighton.edu</div></div></div><span class="badge" style="background:#f1f1f1;color:#555;">User</span></div>
+<div class="event-row"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;">JB</div><div><div style="font-weight:600;color:#fff;font-size:14px;">Jerome Bustarga</div><div style="color:rgba(255,255,255,0.5);font-size:12px;">jhb@creighton.edu</div></div></div><span class="badge" style="background:#FFC72C;color:#001F3F;">Admin</span></div>
+</div>
+<div class="tab-bar">
+<div class="tab" onclick="showScreen('admin-home')"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>Events</span></div>
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Permissions</span></div>
+<div class="tab" onclick="showScreen('admin-analytics')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg><span>Analytics</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+<!-- ADMIN: Analytics -->
+<div class="screen gradient-bg" id="admin-analytics">
+<div class="status-bar light"><span>9:41</span><span></span></div>
+<div style="padding:0 20px 8px;">
+<h1 style="font-size:28px;font-weight:700;color:#fff;">Analytics</h1>
+<p style="color:rgba(255,255,255,0.7);font-size:14px;">Platform impact metrics</p>
+</div>
+<div class="scrollable" style="padding:0 20px 100px;">
+<div class="metric-grid">
+<div class="metric-card"><div class="metric-num">47</div><div class="metric-label">Total Events</div></div>
+<div class="metric-card"><div class="metric-num">5</div><div class="metric-label">Active Now</div></div>
+<div class="metric-card"><div class="metric-num">312</div><div class="metric-label">Est. Servings</div></div>
+<div class="metric-card"><div class="metric-num">89</div><div class="metric-label">Unique Users</div></div>
+</div>
+<div class="section-title">Most Active Organizers</div>
+<div class="event-row"><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;width:32px;height:32px;font-size:12px;">SD</div><div style="color:#fff;font-size:14px;">Sodexo Dining</div></div><div style="color:#FFC72C;font-size:14px;font-weight:600;">12 events</div></div>
+<div class="event-row"><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;width:32px;height:32px;font-size:12px;">SG</div><div style="color:#fff;font-size:14px;">Student Gov</div></div><div style="color:#FFC72C;font-size:14px;font-weight:600;">8 events</div></div>
+<div class="event-row"><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:rgba(255,255,255,0.15);color:#FFC72C;width:32px;height:32px;font-size:12px;">BIO</div><div style="color:#fff;font-size:14px;">Dept. of Biology</div></div><div style="color:#FFC72C;font-size:14px;font-weight:600;">5 events</div></div>
+<div class="section-title">Event Performance</div>
+<div class="event-row"><div style="color:rgba(255,255,255,0.7);font-size:13px;">Avg time to close</div><div style="color:#fff;font-size:15px;font-weight:600;">42 min</div></div>
+<div class="event-row"><div style="color:rgba(255,255,255,0.7);font-size:13px;">Avg detail page views</div><div style="color:#fff;font-size:15px;font-weight:600;">18 / event</div></div>
+<div class="event-row"><div style="color:rgba(255,255,255,0.7);font-size:13px;">Peak usage</div><div style="color:#fff;font-size:15px;font-weight:600;">11:30a – 1:00p</div></div>
+<div class="event-row"><div style="color:rgba(255,255,255,0.7);font-size:13px;">Return rate</div><div style="color:#fff;font-size:15px;font-weight:600;">67%</div></div>
+<div class="section-title">Top Locations</div>
+<div class="event-row"><div style="color:#fff;font-size:14px;">Harper Center</div><div style="color:#FFC72C;font-size:14px;">14 events</div></div>
+<div class="event-row"><div style="color:#fff;font-size:14px;">Skutt Student Center</div><div style="color:#FFC72C;font-size:14px;">11 events</div></div>
+<div class="event-row"><div style="color:#fff;font-size:14px;">Hitchcock</div><div style="color:#FFC72C;font-size:14px;">8 events</div></div>
+</div>
+<div class="tab-bar">
+<div class="tab" onclick="showScreen('admin-home')"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><span>Events</span></div>
+<div class="tab" onclick="showScreen('admin-perms')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Permissions</span></div>
+<div class="tab active"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg><span>Analytics</span></div>
+<div class="tab" onclick="showScreen('login')"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>Logout</span></div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const ind = document.getElementById('home-ind');
+  const darkScreens = ['user-home','user-detail','user-settings','org-home','org-myevents'];
+  ind.className = darkScreens.includes(id) ? 'home-indicator dark' : 'home-indicator';
+}
+</script>
+
+</body>
+</html>
